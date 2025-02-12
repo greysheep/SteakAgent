@@ -9,7 +9,8 @@ GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 YELP_API_KEY = os.getenv('YELP_API_KEY')
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app, resources={r"/*": {"origins": "https://www.steakagent.com"}})
+
 
 # API URLs
 GOOGLE_API_URL = 'https://places.googleapis.com/v1/places:searchNearby'
@@ -106,7 +107,7 @@ def chat():
         return jsonify({'restaurants': restaurants})
     else:
         return jsonify({'reply': 'Please provide your location to find steakhouses.'})
-        
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))  # Default to 10000 if PORT isn't set
     app.run(host='0.0.0.0', port=port)

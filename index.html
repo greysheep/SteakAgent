@@ -15,35 +15,18 @@
             align-items: center;
         }
 
-        h1, h2 {
+        h1 {
             color: #333;
-            margin: 10px 0;
-            text-align: center;
-        }
-
-        #logos {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 10px 0;
-        }
-
-        #flags {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 10px 0;
+            margin: 20px 0;
         }
 
         #inputContainer {
             margin: 20px;
             display: flex;
             gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
         }
 
-        input[type="text"] {
+        input[type="text"], select {
             padding: 10px;
             width: 250px;
             border: 1px solid #ccc;
@@ -125,12 +108,8 @@
         }
 
         @media (max-width: 600px) {
-            input[type="text"] {
+            input[type="text"], select {
                 width: 70%;
-            }
-
-            #logos, #flags {
-                flex-wrap: wrap;
             }
         }
     </style>
@@ -151,16 +130,15 @@
         <button onclick="setLanguage('de')">🇩🇪</button>
         <button onclick="setLanguage('zh')">🇨🇳</button>
     </div>
-
     <div id="inputContainer">
         <input type="text" id="locationInput" placeholder="Enter your location">
-        <button id="findButton" onclick="searchSteakhouses()">Find Steakhouses</button>
+        <button id="buttonFind" onclick="searchSteakhouses()">Find Steakhouses</button>
     </div>
     <div class="error-message" id="errorMessage"></div>
     <div id="results"></div>
 
     <script>
-        const translations = {
+         const translations = {
             en: { mainSubTitle: "Find the Best Steakhouses", enterLocation: "Enter your location", findSteakhouses: "Find Steakhouses", noResults: "No steakhouses found within {0} km.", searchWithin: "Search within {0} km", bookNow: "Book Now", showOnMap: "Show on Map" },
             fr: { mainSubTitle: "Trouver les meilleurs steakhouses", enterLocation: "Entrez votre emplacement", findSteakhouses: "Trouver des steakhouses", noResults: "Aucun steakhouse trouvé dans un rayon de {0} km.", searchWithin: "Rechercher dans un rayon de {0} km", bookNow: "Réserver maintenant", showOnMap: "Afficher sur la carte" },
             es: { mainSubTitle: "Encuentra los mejores steakhouses", enterLocation: "Ingrese su ubicación", findSteakhouses: "Encontrar steakhouses", noResults: "No se encontraron steakhouses dentro de {0} km.", searchWithin: "Buscar dentro de {0} km", bookNow: "Reservar ahora", showOnMap: "Mostrar en el mapa" },
@@ -175,50 +153,50 @@
             currentLanguage = lang;
             document.getElementById('mainSubTitle').textContent = translations[currentLanguage].mainSubTitle;
             document.getElementById('locationInput').placeholder = translations[currentLanguage].enterLocation;
-            document.getElementById('findButton').textContent = translations[currentLanguage].findSteakhouses;
+            document.getElementById('buttonFind').textContent = translations[currentLanguage].findSteakhouses;
         }
 
-        async function searchSteakhouses() {
+        async function searchSteakhouses(radius = 1000) {
             const locationInput = document.getElementById('locationInput');
             const location = locationInput.value.trim();
             const errorMessage = document.getElementById('errorMessage');
 
-            errorMessage.textContent = '';
+            errorMessage.textContent = ''; // Clear previous error
 
             if (!location) {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(async (position) => {
-                        const coords = `${position.coords.latitude},${position.coords.longitude}`;
-                        await fetchSteakhouses(coords);
-                    }, () => {
-                        errorMessage.textContent = translations[currentLanguage].enterLocation;
-                    });
-                } else {
-                    errorMessage.textContent = translations[currentLanguage].enterLocation;
-                }
+                errorMessage.textContent = translations[currentLanguage].enterLocation;
                 return;
             }
 
-            await fetchSteakhouses(location);
-        }
-
-        async function fetchSteakhouses(location) {
-            const response = await fetch('https://steakagent.onrender.com/chat', {
+            const response = await fetch('http://127.0.0.1:10000/chat', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ location })
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ location, radius })
             });
 
             const data = await response.json();
-            displayResults(data.restaurants);
+            displayResults(data.restaurants, location, radius);
         }
 
-        function displayResults(restaurants) {
+        function displayResults(restaurants, location, radius) {
             const resultsContainer = document.getElementById('results');
             resultsContainer.innerHTML = '';
 
             if (restaurants.length === 0) {
-                resultsContainer.innerHTML = `<p>${translations[currentLanguage].noResults.replace('{0}', 50)}</p>`;
+                const nextRadius = getNextRadius(radius);
+                if (nextRadius) {
+                    const message = document.createElement('div');
+                    message.className = 'radius-message';
+                    message.innerHTML = `
+                        <p>${translations[currentLanguage].noResults.replace('{0}', (radius / 1000).toFixed(1))}</p>
+                        <button onclick="searchSteakhouses(${nextRadius})">${translations[currentLanguage].searchWithin.replace('{0}', (nextRadius / 1000).toFixed(1))}</button>
+                    `;
+                    resultsContainer.appendChild(message);
+                } else {
+                    resultsContainer.innerHTML = `<p>${translations[currentLanguage].noResults.replace('{0}', 50)}</p>`;
+                }
                 return;
             }
 
@@ -237,6 +215,12 @@
                 `;
                 resultsContainer.appendChild(card);
             });
+        }
+
+        function getNextRadius(currentRadius) {
+            const radiusSequence = [1000, 5000, 10000, 50000];
+            const currentIndex = radiusSequence.indexOf(currentRadius);
+            return currentIndex !== -1 && currentIndex < radiusSequence.length - 1 ? radiusSequence[currentIndex + 1] : null;
         }
     </script>
 </body>

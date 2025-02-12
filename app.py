@@ -106,6 +106,9 @@ def chat():
         return jsonify({'restaurants': restaurants})
     else:
         return jsonify({'reply': 'Please provide your location to find steakhouses.'})
-
+        
 if __name__ == '__main__':
-    app.run(debug=False)
+    port = int(os.environ.get('PORT', 10000))  # Default to 10000 if PORT isn't set
+    app.run(host='0.0.0.0', port=port)
+
+

@@ -9,7 +9,8 @@ GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 YELP_API_KEY = os.getenv('YELP_API_KEY')
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://www.steakagent.com"}})
+CORS(app, resources={r"/*": {"origins": "https://www.steakagent.com"}}) #Production
+#CORS(app, resources={r"/*": {"origins": "*"}}) #Development
 
 
 # API URLs
@@ -65,17 +66,24 @@ def find_steak_restaurants_google(location, radius):
 
     # Exporting the Google API response to a file
     if response.status_code == 200:
-        #with open('google_places_api_response.json', 'w') as file:
-            #json.dump(response.json(), file, indent=4)
+        with open('google_places_api_response.json', 'w') as file:
+            json.dump(response.json(), file, indent=4)
 
         places = response.json().get('places', [])
         detailed_results = []
 
         for place in places[:10]:  # Limit API calls to top 10 results
+            user_rating_count = place.get('userRatingCount', 0)
+
+            # Exclude restaurants with fewer than 1 review
+            if user_rating_count < 10:
+                continue
+
             detailed_results.append({
                 'name': place.get('displayName', {}).get('text', 'Unknown'),
                 'rating': place.get('rating', 0),
                 'address': place.get('formattedAddress', 'N/A'),
+                'reviews': place.get('userRatingCount', 0), 
                 'website': place.get('websiteUri', '#'),
                 'maps_link': place.get('googleMapsUri', '#'),
                 'phone': place.get('internationalPhoneNumber', 'N/A'),

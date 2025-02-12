@@ -66,10 +66,23 @@
             color: #666;
         }
 
+        .restaurant-reviews {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
         .rating {
             font-size: 1.2em;
             color: #ff9800;
         }
+
+        .review-count {
+            font-size: 0.8em;
+            color: #333;
+        }
+
 
         .cta-buttons {
             display: flex;
@@ -136,6 +149,7 @@
     <div>
         <button id="buttonFind" onclick="searchSteakhouses()">Find Steakhouses</button>
     </div>
+    <div><p></p></div>
     <div class="error-message" id="errorMessage"></div>
     <div id="results"></div>
 
@@ -209,7 +223,10 @@
                 card.innerHTML = `
                     <div class="restaurant-name">${restaurant.name}</div>
                     <div class="restaurant-address">${restaurant.address}</div>
-                    <div class="rating">⭐ ${restaurant.rating}</div>
+                    <div class="restaurant-reviews">
+                        <div class="rating">⭐ ${restaurant.rating}</div>
+                        <div class="review-count"> based on ${restaurant.reviews} reviews.</div>
+                    </div>
                     <div class="cta-buttons">
                         <a href="${restaurant.website}" target="_blank">${translations[currentLanguage].bookNow}</a>
                         <a href="${restaurant.maps_link}" target="_blank">${translations[currentLanguage].showOnMap}</a>

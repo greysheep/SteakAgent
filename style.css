@@ -1,0 +1,182 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    color: #333;
+    margin: 10px 0;
+    font-size: 1.6em;
+    text-align: center;
+}
+
+#inputContainer {
+    margin: 10px;
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+input[type="text"], select {
+    padding: 10px;
+    width: 85%;
+    max-width: 350px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 0.9em;
+}
+
+button {
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    max-width: 150px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.restaurant-card {
+    background: white;
+    padding: 15px;
+    margin: 8px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    max-width: 350px;
+    width: 90%;
+}
+
+.restaurant-name {
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+.restaurant-address {
+    font-size: 0.85em;
+    color: #666;
+}
+
+.restaurant-reviews {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 8px;
+}
+
+.rating {
+    font-size: 1em;
+    color: #ff9800;
+}
+
+.review-count {
+    font-size: 0.75em;
+    color: #333;
+}
+
+.cta-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+    justify-content: center;
+}
+
+.cta-buttons a, .cta-buttons button {
+    padding: 6px 10px;
+    background-color: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+.cta-buttons a:hover, .cta-buttons button:hover {
+    background-color: #218838;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.85em;
+    margin-top: 5px;
+    min-height: 18px;
+    text-align: center;
+}
+
+.radius-message {
+    background-color: #fff3cd;
+    padding: 8px;
+    border: 1px solid #ffeeba;
+    border-radius: 5px;
+    margin: 8px 0;
+    max-width: 350px;
+    text-align: center;
+}
+
+#results {
+    max-height: 55vh;
+    overflow-y: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#flags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+#flags button {
+    font-size: 1em;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+    min-width: 40px;
+}
+
+#flags button:hover {
+    background-color: #ddd;
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.4em;
+    }
+
+    input[type="text"], select {
+        font-size: 16px;  /* Ensures no zoom on mobile */
+        padding: 10px;
+        width: 85%;
+        max-width: 350px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }    
+
+    button {
+        width: auto;
+    }
+
+    .cta-buttons {
+        flex-direction: row;
+        align-items: center;
+    }
+}

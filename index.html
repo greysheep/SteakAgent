@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SteakAgent - Find the Best Steakhouses</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            margin: 20px 0;
+        }
+
+        #inputContainer {
+            margin: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"], select {
+            padding: 10px;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .restaurant-card {
+            background: white;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .restaurant-name {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .restaurant-address {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .rating {
+            font-size: 1.2em;
+            color: #ff9800;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .cta-buttons a, .cta-buttons button {
+            padding: 8px 12px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-buttons a:hover, .cta-buttons button:hover {
+            background-color: #218838;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin-top: -10px;
+        }
+
+        .radius-message {
+            background-color: #fff3cd;
+            padding: 10px;
+            border: 1px solid #ffeeba;
+            border-radius: 5px;
+            margin: 10px 0;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            input[type="text"], select {
+                width: 70%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1><span>🥩🍽️</span> <span id="mainTitle">SteakAgent.com</span> <span>🍽️🥩</span></h1>
+    <h2><span id="mainSubTitle">Find the Best Steakhouses</span></h2>
+    <div id="inputContainer">
+        <select id="languageSelect" onchange="setLanguage()">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="es">Español</option>
+            <option value="it">Italiano</option>
+            <option value="de">Deutsch</option>
+            <option value="zh">简体中文</option>
+        </select>
+        <input type="text" id="locationInput" placeholder="Enter your location">
+        <button onclick="searchSteakhouses()">Find Steakhouses</button>
+    </div>
+    <div class="error-message" id="errorMessage"></div>
+    <div id="results"></div>
+
+    <script>
+        const translations = {
+            en: {
+                mainSubTitle: "Find the Best Steakhouses",
+                enterLocation: "Enter your location",
+                findSteakhouses: "Find Steakhouses",
+                noResults: "No steakhouses found within {0} km.",
+                searchWithin: "Search within {0} km",
+                bookNow: "Book Now",
+                showOnMap: "Show on Map"
+            },
+            fr: {
+                mainSubTitle: "Trouver les meilleurs steakhouses",
+                enterLocation: "Entrez votre emplacement",
+                findSteakhouses: "Trouver des steakhouses",
+                noResults: "Aucun steakhouse trouvé dans un rayon de {0} km.",
+                searchWithin: "Rechercher dans un rayon de {0} km",
+                bookNow: "Réserver maintenant",
+                showOnMap: "Afficher sur la carte"
+            },
+            es: {
+                mainSubTitle: "Encuentra los mejores steakhouses",
+                enterLocation: "Ingrese su ubicación",
+                findSteakhouses: "Encontrar steakhouses",
+                noResults: "No se encontraron steakhouses dentro de {0} km.",
+                searchWithin: "Buscar dentro de {0} km",
+                bookNow: "Reservar ahora",
+                showOnMap: "Mostrar en el mapa"
+            },
+            it: {
+                mainSubTitle: "Trova i migliori steakhouses",
+                enterLocation: "Inserisci la tua posizione",
+                findSteakhouses: "Trova steakhouses",
+                noResults: "Nessun steakhouse trovato entro {0} km.",
+                searchWithin: "Cerca entro {0} km",
+                bookNow: "Prenota ora",
+                showOnMap: "Mostra sulla mappa"
+            },
+            de: {
+                mainSubTitle: "Finde die besten Steakhouses",
+                enterLocation: "Geben Sie Ihren Standort ein",
+                findSteakhouses: "Finde Steakhouses",
+                noResults: "Keine Steakhouses innerhalb von {0} km gefunden.",
+                searchWithin: "Suche innerhalb von {0} km",
+                bookNow: "Jetzt buchen",
+                showOnMap: "Auf der Karte anzeigen"
+            },
+            zh: {
+                mainSubTitle: "寻找最佳牛排馆",
+                enterLocation: "输入您的位置",
+                findSteakhouses: "寻找牛排馆",
+                noResults: "在{0}公里范围内未找到牛排馆。",
+                searchWithin: "在{0}公里范围内搜索",
+                bookNow: "立即预订",
+                showOnMap: "在地图上显示"
+            }
+        };
+
+        let currentLanguage = 'en';
+
+        function setLanguage() {
+            currentLanguage = document.getElementById('languageSelect').value;
+            document.getElementById('mainSubTitle').textContent = translations[currentLanguage].mainSubTitle;
+            document.getElementById('locationInput').placeholder = translations[currentLanguage].enterLocation;
+            document.querySelector('button').textContent = translations[currentLanguage].findSteakhouses;
+        }
+
+        async function searchSteakhouses(radius = 1000) {
+            const locationInput = document.getElementById('locationInput');
+            const location = locationInput.value.trim();
+            const errorMessage = document.getElementById('errorMessage');
+
+            errorMessage.textContent = ''; // Clear previous error
+
+            if (!location) {
+                errorMessage.textContent = translations[currentLanguage].enterLocation;
+                return;
+            }
+
+            const response = await fetch('http://127.0.0.1:5000/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ location, radius })
+            });
+
+            const data = await response.json();
+            displayResults(data.restaurants, location, radius);
+        }
+
+        function displayResults(restaurants, location, radius) {
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+
+            if (restaurants.length === 0) {
+                const nextRadius = getNextRadius(radius);
+                if (nextRadius) {
+                    const message = document.createElement('div');
+                    message.className = 'radius-message';
+                    message.innerHTML = `
+                        <p>${translations[currentLanguage].noResults.replace('{0}', (radius / 1000).toFixed(1))}</p>
+                        <button onclick="searchSteakhouses(${nextRadius})">${translations[currentLanguage].searchWithin.replace('{0}', (nextRadius / 1000).toFixed(1))}</button>
+                    `;
+                    resultsContainer.appendChild(message);
+                } else {
+                    resultsContainer.innerHTML = `<p>${translations[currentLanguage].noResults.replace('{0}', 50)}</p>`;
+                }
+                return;
+            }
+
+            restaurants.forEach(restaurant => {
+                const card = document.createElement('div');
+                card.className = 'restaurant-card';
+
+                card.innerHTML = `
+                    <div class="restaurant-name">${restaurant.name}</div>
+                    <div class="restaurant-address">${restaurant.address}</div>
+                    <div class="rating">⭐ ${restaurant.rating}</div>
+                    <div class="cta-buttons">
+                        <a href="${restaurant.website}" target="_blank">${translations[currentLanguage].bookNow}</a>
+                        <a href="${restaurant.maps_link}" target="_blank">${translations[currentLanguage].showOnMap}</a>
+                    </div>
+                `;
+                resultsContainer.appendChild(card);
+            });
+        }
+
+        function getNextRadius(currentRadius) {
+            const radiusSequence = [1000, 5000, 10000, 50000];
+            const currentIndex = radiusSequence.indexOf(currentRadius);
+            return currentIndex !== -1 && currentIndex < radiusSequence.length - 1 ? radiusSequence[currentIndex + 1] : null;
+        }
+    </script>
+</body>
+</html>

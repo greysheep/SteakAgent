@@ -1,8 +1,12 @@
 import requests
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from config import GOOGLE_API_KEY, YELP_API_KEY  # Import API keys from config
+#from config import GOOGLE_API_KEY, YELP_API_KEY  # Import API keys from config
 import json
+import os
+
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+YELP_API_KEY = os.getenv('YELP_API_KEY')
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
